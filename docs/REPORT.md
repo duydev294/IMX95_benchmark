@@ -186,3 +186,47 @@ board này, ít nhất cho tới khi xác định rõ cách cấp buffer đúng 
 - Board có **2 bug ổn định cần lưu ý** khi triển khai thực tế:
   1. `--num_threads=2` (C++) → crash cứng, tái lập 100%.
   2. Python `tflite_runtime` + Neutron delegate zero-copy → segfault tại `allocate_tensors()`.
+
+## 9. Vì sao ước tính latency của compiler lệch với đo thực tế?
+
+Log `neutron_compiler` in ra `Latency estimation = X ms (@ 1000.000 MHz) (NPU only)`.
+Đây là con số **tính tĩnh lúc compile**, không đo trên phần cứng: compiler đếm số
+**cycle** cần cho lịch trình tile/microcode đã sinh ra (bước "Tile scheduling" +
+"microcode generation"), quy đổi ra ms với giả định **xung nhịp NPU = 1GHz**. Nhãn
+"(NPU only)" nghĩa đen là **chỉ tính phần chạy trên NPU**, không gồm bất kỳ op nào
+chạy trên CPU.
+
+### Bằng chứng thực đo (`--enable_op_profiling=true`)
+
+Log đầy đủ: [`profiling/scrfd_op_profile.log`](profiling/scrfd_op_profile.log),
+[`profiling/yolov8n_pose_op_profile.log`](profiling/yolov8n_pose_op_profile.log).
+
+| | SCRFD-500MF | YOLOv8n-pose |
+|---|---|---|
+| Ước tính compiler (NPU-only) | 3.51 ms | 10.24 ms |
+| **Đo thực tế riêng node `NeutronDelegate`** | 3.665 ms | 13.14 ms |
+| → sai số của ước tính so với NPU đo thực | ~4% | ~28% |
+| **Tổng thời gian đo thực tế (cả pipeline)** | 15.07–15.31 ms | 44.68–45.48 ms |
+
+**Bản thân ước tính NPU khá sát** (lệch 4–28%, hợp lý cho một mô hình tính cycle tĩnh
+không mô phỏng hết mọi hiệu ứng bộ nhớ/bus thực tế). Chênh lệch lớn (4.1×–4.4×) giữa
+"ước tính" và "tổng đo thực tế" đến từ phần **compiler chưa bao giờ tính vào**: các op
+không offload được lên NPU, chạy CPU qua XNNPACK, xen kẽ trước/sau lệnh gọi NPU
+(tổng ~35 node cho SCRFD, ~72 node cho YOLOv8n-pose, so với chỉ 1 node là NPU):
+
+- **SCRFD:** riêng 1 phép `Transpose (ND, X32)` (chuyển layout NCHW↔NHWC giữa biên
+  I/O và lõi NPU) chiếm **8.1 ms = 54% tổng thời gian** — hơn cả thời gian NPU (3.67ms).
+- **YOLOv8n-pose:** `SOFTMAX` (9.74ms, 22%) + các `Transpose` (10.6ms, 24%) +
+  elementwise/slice/copy/`Fully Connected GEMM` còn lại (~8ms) — tổng phần CPU
+  chiếm **~71%** thời gian pipeline.
+
+### Kết luận
+
+Ước tính "NPU only" không sai về bản chất tính toán, nhưng chỉ phản ánh **một phần
+nhỏ** của thời gian thực tế trên thiết bị, vì phần lớn thời gian nằm ở các op fallback
+CPU — chủ yếu là **Transpose chuyển đổi layout dữ liệu** giữa vùng nhớ CPU và NPU, và
+(với YOLOv8n-pose) phép `Softmax`/decode hậu xử lý chưa được compiler offload
+(34/143 op "not converted" ở SCRFD, 73/384 op ở YOLOv8n-pose — xem mục 3–4). Muốn thu
+hẹp khoảng cách này cần tăng tỷ lệ operator conversion ratio (ví dụ tối ưu lại graph
+đầu vào để giảm nhu cầu chuyển layout, hoặc chờ NXP mở rộng tập operator hỗ trợ của
+`neutron-compiler`), chứ không phải do công thức ước tính cycle sai.

@@ -1,0 +1,124 @@
+INFO: STARTING!
+INFO: Log parameter values verbosely: [0]
+INFO: Min num runs: [10]
+INFO: Min runs duration (seconds): [0]
+INFO: Num threads: [1]
+INFO: Min warmup runs: [1]
+INFO: Graph: [/root/scrfd_500m_kps_neutron.tflite]
+INFO: Signature to run: []
+INFO: Input layers: [images]
+INFO: Input shapes: [1,3,640,640]
+INFO: Input value files: [images:/root/face_scrfd.bin]
+INFO: Enable op profiling: [1]
+INFO: #threads used for CPU inference: [1]
+INFO: #threads used for CPU inference: [1]
+INFO: External delegate path: [/usr/lib/liblitert_neutron_delegate.so]
+INFO: Loaded model /root/scrfd_500m_kps_neutron.tflite
+INFO: EXTERNAL delegate created.
+INFO: NeutronDelegate delegate: 1 nodes delegated out of 35 nodes with 1 partitions.
+
+INFO: Neutron delegate version: v1.0.0-7399a58e, zerocp enabled.
+INFO: Explicitly applied EXTERNAL delegate, and the model graph will be partially executed by the delegate w/ 1 delegate kernels.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+INFO: The input model file size (MB): 0.954576
+INFO: Initialized session in 8.068ms.
+INFO: Running benchmark for at least 1 iterations and at least 0.5 seconds but terminate if exceeding 150 seconds.
+INFO: count=31 first=18621 curr=15740 min=14788 max=18621 avg=15424.4 std=649 p5=14837 median=15376 p95=15954
+
+INFO: Running benchmark for at least 10 iterations and at least 0 seconds but terminate if exceeding 150 seconds.
+INFO: count=10 first=14794 curr=15551 min=14387 max=15772 avg=15239.4 std=409 p5=14387 median=15385 p95=15772
+
+INFO: Inference timings in us: Init: 8068, First inference: 18621, Warmup (avg): 15424.4, Inference (avg): 15239.4
+INFO: Note: as the benchmark tool itself affects memory footprint, the following is only APPROXIMATE to the actual memory footprint of the model at runtime. Take the information at your discretion.
+INFO: Memory footprint delta from the start of the tool (MB): init=5.00781 overall=24.875
+INFO: Profiling Info for Benchmark Initialization:
+============================== Run Order ==============================
+	                             [node type]	  [first]	 [avg ms]	     [%]	  [cdf%]	  [mem KB]	[times called]	[Name]
+	                 ModifyGraphWithDelegate	    0.739	    2.110	 96.634%	 96.634%	  1296.000	        2	ModifyGraphWithDelegate/0
+	                         AllocateTensors	    0.147	    0.147	  3.366%	100.000%	     0.000	        1	AllocateTensors/0
+
+============================== Top by Computation Time ==============================
+	                             [node type]	  [first]	 [avg ms]	     [%]	  [cdf%]	  [mem KB]	[times called]	[Name]
+	                 ModifyGraphWithDelegate	    0.739	    2.110	 96.634%	 96.634%	  1296.000	        2	ModifyGraphWithDelegate/0
+	                         AllocateTensors	    0.147	    0.147	  3.366%	100.000%	     0.000	        1	AllocateTensors/0
+
+Number of nodes executed: 2
+============================== Summary by node type ==============================
+	                             [Node type]	  [count]	  [avg ms]	    [avg %]	    [cdf %]	  [mem KB]	[times called]
+	                 ModifyGraphWithDelegate	        1	     4.220	    96.634%	    96.634%	  1296.000	        2
+	                         AllocateTensors	        1	     0.147	     3.366%	   100.000%	     0.000	        1
+
+Timings (microseconds): count=1 curr=4367
+Memory (bytes): count=0
+2 nodes observed
+
+
+
+INFO: Operator-wise Profiling Info for Regular Benchmark Runs:
+============================== Run Order ==============================
+	                             [node type]	  [first]	 [avg ms]	     [%]	  [cdf%]	  [mem KB]	[times called]	[Name]
+	                          Copy (NC, X32)	    0.912	    0.992	  6.581%	  6.581%	     0.000	        1	Delegate/Copy (NC, X32):0
+	           Transpose (ND, X32) Transpose	    7.295	    8.097	 53.725%	 60.305%	     0.000	        1	Delegate/Transpose (ND, X32) Transpose:1
+	                          Copy (NC, X32)	    0.001	    0.001	  0.008%	 60.313%	     0.000	        1	Delegate/Copy (NC, X32):2
+	                  Unary Elementwise (NC)	    1.604	    1.485	  9.853%	 70.166%	     0.000	        1	Delegate/Unary Elementwise (NC):3
+	                         NeutronDelegate	    3.792	    3.665	 24.318%	 94.484%	     0.000	        1	[437_DequantizeLinear_Output, 438_DequantizeLinear_Output, 439_DequantizeLinear_Output, 480_DequantizeLinear_Output, 481_DequantizeLinear_Output, 482_DequantizeLinear_Output, 523_DequantizeLinear_Output, 524_DequantizeLinear_Output, 525_DequantizeLinear_Output]:35
+	                          Slice (ND, X8)	    0.172	    0.145	  0.963%	 95.448%	     0.000	        1	Delegate/Slice (ND, X8):0
+	                          Slice (ND, X8)	    0.183	    0.155	  1.031%	 96.479%	     0.000	        1	Delegate/Slice (ND, X8):1
+	                          Slice (ND, X8)	    0.153	    0.130	  0.862%	 97.341%	     0.000	        1	Delegate/Slice (ND, X8):2
+	                          Slice (ND, X8)	    0.043	    0.037	  0.244%	 97.584%	     0.000	        1	Delegate/Slice (ND, X8):3
+	                          Slice (ND, X8)	    0.047	    0.040	  0.268%	 97.852%	     0.000	        1	Delegate/Slice (ND, X8):4
+	                          Slice (ND, X8)	    0.039	    0.033	  0.220%	 98.073%	     0.000	        1	Delegate/Slice (ND, X8):5
+	                          Slice (ND, X8)	    0.011	    0.010	  0.064%	 98.136%	     0.000	        1	Delegate/Slice (ND, X8):6
+	                          Slice (ND, X8)	    0.013	    0.011	  0.076%	 98.213%	     0.000	        1	Delegate/Slice (ND, X8):7
+	                          Slice (ND, X8)	    0.011	    0.009	  0.062%	 98.274%	     0.000	        1	Delegate/Slice (ND, X8):8
+	                           Copy (NC, X8)	    0.000	    0.001	  0.003%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):9
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):10
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):11
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):12
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):13
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):14
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):15
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):16
+	                           Copy (NC, X8)	    0.000	    0.000	  0.000%	 98.278%	     0.000	        1	Delegate/Copy (NC, X8):17
+	                  Unary Elementwise (NC)	    0.020	    0.017	  0.112%	 98.390%	     0.000	        1	Delegate/Unary Elementwise (NC):18
+	                  Unary Elementwise (NC)	    0.055	    0.010	  0.068%	 98.457%	     0.000	        1	Delegate/Unary Elementwise (NC):19
+	                  Unary Elementwise (NC)	    0.003	    0.002	  0.014%	 98.471%	     0.000	        1	Delegate/Unary Elementwise (NC):20
+	                  Unary Elementwise (NC)	    0.003	    0.003	  0.017%	 98.488%	     0.000	        1	Delegate/Unary Elementwise (NC):21
+	                  Unary Elementwise (NC)	    0.004	    0.003	  0.022%	 98.510%	     0.000	        1	Delegate/Unary Elementwise (NC):22
+	                  Unary Elementwise (NC)	    0.004	    0.003	  0.022%	 98.532%	     0.000	        1	Delegate/Unary Elementwise (NC):23
+	                  Unary Elementwise (NC)	    0.009	    0.008	  0.050%	 98.582%	     0.000	        1	Delegate/Unary Elementwise (NC):24
+	                  Unary Elementwise (NC)	    0.013	    0.011	  0.076%	 98.658%	     0.000	        1	Delegate/Unary Elementwise (NC):25
+	                  Unary Elementwise (NC)	    0.014	    0.011	  0.074%	 98.732%	     0.000	        1	Delegate/Unary Elementwise (NC):26
+	                  Unary Elementwise (NC)	    0.032	    0.027	  0.180%	 98.912%	     0.000	        1	Delegate/Unary Elementwise (NC):27
+	                  Unary Elementwise (NC)	    0.052	    0.048	  0.315%	 99.227%	     0.000	        1	Delegate/Unary Elementwise (NC):28
+	                  Unary Elementwise (NC)	    0.125	    0.117	  0.773%	100.000%	     0.000	        1	Delegate/Unary Elementwise (NC):29
+
+============================== Top by Computation Time ==============================
+	                             [node type]	  [first]	 [avg ms]	     [%]	  [cdf%]	  [mem KB]	[times called]	[Name]
+	           Transpose (ND, X32) Transpose	    7.295	    8.097	 53.725%	 53.725%	     0.000	        1	Delegate/Transpose (ND, X32) Transpose:1
+	                         NeutronDelegate	    3.792	    3.665	 24.318%	 78.043%	     0.000	        1	[437_DequantizeLinear_Output, 438_DequantizeLinear_Output, 439_DequantizeLinear_Output, 480_DequantizeLinear_Output, 481_DequantizeLinear_Output, 482_DequantizeLinear_Output, 523_DequantizeLinear_Output, 524_DequantizeLinear_Output, 525_DequantizeLinear_Output]:35
+	                  Unary Elementwise (NC)	    1.604	    1.485	  9.853%	 87.896%	     0.000	        1	Delegate/Unary Elementwise (NC):3
+	                          Copy (NC, X32)	    0.912	    0.992	  6.581%	 94.476%	     0.000	        1	Delegate/Copy (NC, X32):0
+	                          Slice (ND, X8)	    0.183	    0.155	  1.031%	 95.508%	     0.000	        1	Delegate/Slice (ND, X8):1
+	                          Slice (ND, X8)	    0.172	    0.145	  0.963%	 96.471%	     0.000	        1	Delegate/Slice (ND, X8):0
+	                          Slice (ND, X8)	    0.153	    0.130	  0.862%	 97.333%	     0.000	        1	Delegate/Slice (ND, X8):2
+	                  Unary Elementwise (NC)	    0.125	    0.117	  0.773%	 98.106%	     0.000	        1	Delegate/Unary Elementwise (NC):29
+	                  Unary Elementwise (NC)	    0.052	    0.048	  0.315%	 98.421%	     0.000	        1	Delegate/Unary Elementwise (NC):28
+	                          Slice (ND, X8)	    0.047	    0.040	  0.268%	 98.689%	     0.000	        1	Delegate/Slice (ND, X8):4
+
+Number of nodes executed: 35
+============================== Summary by node type ==============================
+	                             [Node type]	  [count]	  [avg ms]	    [avg %]	    [cdf %]	  [mem KB]	[times called]
+	           Transpose (ND, X32) Transpose	        1	     8.097	    53.761%	    53.761%	     0.000	        1
+	                         NeutronDelegate	        1	     3.665	    24.334%	    78.096%	     0.000	        1
+	                  Unary Elementwise (NC)	       13	     1.740	    11.553%	    89.649%	     0.000	       13
+	                          Copy (NC, X32)	        2	     0.992	     6.587%	    96.235%	     0.000	        2
+	                          Slice (ND, X8)	        9	     0.567	     3.765%	   100.000%	     0.000	        9
+	                           Copy (NC, X8)	        9	     0.000	     0.000%	   100.000%	     0.000	        9
+
+Timings (microseconds): count=10 first=14610 curr=15387 min=14215 max=15602 avg=15071.8 std=413
+Memory (bytes): count=0
+35 nodes observed
+
+
+
