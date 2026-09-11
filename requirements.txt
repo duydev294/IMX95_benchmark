@@ -1,0 +1,6 @@
+# Host-side (x86_64) tools for image preprocessing.
+# For the ONNX->TFLite->Neutron conversion toolchain (onnx2quant, onnx2tflite,
+# neutron_compiler), see docs/SETUP.md — those come from NXP's eIQ package index,
+# not PyPI.
+pillow
+numpy
