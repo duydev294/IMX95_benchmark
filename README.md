@@ -42,12 +42,24 @@ cd /usr/bin/tensorflow-lite-2.19.0/examples
 ⚠️ **Luôn dùng `--num_threads=1`** — `--num_threads=2` gây crash/reboot board tái lặp
 (xem `docs/REPORT.md` mục "Bug đã phát hiện").
 
-## Kết quả tóm tắt (đo trên board, ảnh thật)
+## Kết quả tóm tắt
 
-| Model | Latency/frame (avg) | FPS |
+| | SCRFD-500MF (bnkps) | YOLOv8n-pose |
 |---|---|---|
-| SCRFD-500MF (bnkps) | 15.14 ms | ~66 |
-| YOLOv8n-pose | 45.48 ms | ~22 |
+| Nguồn model | `hpc203/scrfd-opencv` — `scrfd_500m_kps.onnx` (BN, có 5 keypoints) | `Xenova/yolov8n-pose` ONNX |
+| Input / Output | 1×3×640×640 → 9 outputs (score/bbox/kps ×3 scale) | 1×3×640×640 → 1×56×8400 |
+| Op conversion ratio | 109/143 (76.2%) | 311/384 (81.1%) |
+| Neutron ops trong subgraph | 72 | 200 |
+| Latency ước tính (compiler, NPU-only) | 3.51 ms @1GHz | 10.24 ms @1GHz |
+| Latency đo thực tế trên board (20 runs, `--num_threads=1`) | avg 15.31 ms, std 0.26 ms, min 15.05 / max 16.04 | avg 45.19 ms, std 1.13 ms, min 43.47 / max 47.63 |
+| Latency đo với ảnh thật (khác data ngẫu nhiên) | avg 15.14 ms | avg 45.48 ms |
+| Model size (compiled) | 954 KB | 3.38 MB |
+| FPS tương đương | ~66 | ~22 |
+
+Vì sao latency ước tính và đo thực tế lệch nhau (4–4.4×) — xem
+[docs/REPORT.md, mục 9](docs/REPORT.md#9-vì-sao-ước-tính-latency-của-compiler-lệch-với-đo-thực-tế) —
+tóm lại: ước tính NPU-only tự nó khá chính xác, phần lệch đến từ op CPU fallback
+(chủ yếu Transpose chuyển layout) mà ước tính không tính vào.
 
 Chi tiết đầy đủ (log gốc, dmesg, quá trình debug lỗi compile SCRFD, bug num_threads,
 bug segfault Python zero-copy delegate...) xem **[docs/REPORT.md](docs/REPORT.md)**.
